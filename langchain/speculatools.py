@@ -1,11 +1,10 @@
 from langchain_core.tools import Tool
 from langchain_core.runnables import Runnable
-from typing import Dict, Any
+from typing import Dict, Any, AsyncGenerator
 from asyncio import create_task
 
 
-
-async def call_tool(chain: Runnable, tool: Tool, tool_input: Dict[str, Any]):
+async def call_tool(chain: Runnable, tool: Tool, tool_input: Dict[str, Any]) -> AsyncGenerator[str, None]:
     """
     >>> test_call_tool()
     """
