@@ -39,11 +39,6 @@ def test_call_tool():
     class DummyChain(Runnable):
         def __init__(self, template: str):
             self.template = template
-        def __ror__(self, other):
-            self.input = other
-            return self
-        def invoke(self, input, config=None):
-            return self.template.format(**input)
         async def stream(self, input):
             for chunk in self.template.format(**input):
                 yield chunk
