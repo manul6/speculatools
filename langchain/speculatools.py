@@ -55,10 +55,10 @@ def test_call_tool():
     async def _test_for(*, x):
         chain = DummyChain(TEMPLATE_MSG)
         result = call_tool(chain, slow_is_equal_to_one, {"x": x})
-        sum = ""
+        output_str = ""
         async for chunk in result:
-            sum += chunk
-        return sum
+            output_str += chunk
+        return output_str
 
     def _correct_finally(*, predict, misprediction_token="<MISPREDICT>", truth) -> bool:
         guesses = predict.split(misprediction_token)
