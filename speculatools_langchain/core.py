@@ -5,8 +5,45 @@ from asyncio import create_task
 
 
 async def call_tool(chain: Runnable, tool: Tool, tool_input: Dict[str, Any]) -> AsyncGenerator[str, None]:
-    """
-    >>> test_call_tool()
+    r"""
+    Stream optimistic output while a Tool runs, then correct it if needed.
+
+    Doctest (success path):
+    >>> from langchain_core.tools import tool
+    >>> import asyncio, json
+    >>> class DummyChain:
+    ...     def __init__(self, template: str):
+    ...         self.template = template
+    ...     async def stream(self, input):
+    ...         body = self.template.format(result=json.dumps(input["result"]))
+    ...         for ch in body:
+    ...             yield ch
+    >>> @tool
+    ... def fast_ok(x: int) -> dict:
+    ...     'Return success when x == 1.'
+    ...     return {"status": "success" if x == 1 else "error"}
+    >>> async def run_success():
+    ...     chain = DummyChain("answer: {result}")
+    ...     out = ""
+    ...     async for chunk in call_tool(chain, fast_ok, {"x": 1}):
+    ...         out += chunk
+    ...     return out
+    >>> asyncio.run(run_success())
+    'answer: {"status": "success"}'
+
+    Doctest (mispredict then correct):
+    >>> async def run_error():
+    ...     chain = DummyChain("answer: {result}")
+    ...     out = ""
+    ...     async for chunk in call_tool(chain, fast_ok, {"x": 2}):
+    ...         out += chunk
+    ...     return out
+    >>> result = asyncio.run(run_error())
+    >>> parts = result.split("<MISPREDICT>")
+    >>> len(parts) in (1, 2)
+    True
+    >>> parts[-1]  # the final corrected truth
+    'answer: {"status": "error"}'
     """
     task = create_task(tool.arun(tool_input))
     async for chunk in chain.stream({"result" : {"status": "success"}}):
@@ -18,6 +55,7 @@ async def call_tool(chain: Runnable, tool: Tool, tool_input: Dict[str, Any]) -> 
         yield "<MISPREDICT>"
         async for chunk in chain.stream({"result" : result}):
             yield chunk
+
 
 def test_call_tool():
     from langchain_core.tools import tool

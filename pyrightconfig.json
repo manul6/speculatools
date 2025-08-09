@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json.schemastore.org/pyrightconfig.json",
+  "include": ["speculatools_langchain"],
+  "exclude": [
+    ".venv",
+    "venv",
+    ".git",
+    "build",
+    "dist",
+    "**/__pycache__"
+  ],
+  "venvPath": ".",
+  "venv": ".venv",
+  "pythonVersion": "3.11",
+  "typeCheckingMode": "basic",
+  "reportMissingTypeStubs": false,
+  "reportOptionalMemberAccess": "warning",
+  "reportUnknownVariableType": "warning"
+}
+

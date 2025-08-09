@@ -1,0 +1,26 @@
+[tool.ruff]
+# Target Python version and general formatting defaults
+target-version = "py311"
+line-length = 100
+extend-exclude = [
+  ".venv",
+  "venv",
+  "build",
+  "dist",
+  "**/__pycache__",
+]
+
+[tool.ruff.lint]
+# Core rules: pyflakes/pycodestyle/import sorting/pyupgrade/bugbear
+select = ["E", "F", "I", "UP", "B"]
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["speculatools_langchain"]
+combine-as-imports = true
+
+[tool.ruff.format]
+quote-style = "preserve"
+indent-style = "space"
+skip-magic-trailing-comma = false
+
